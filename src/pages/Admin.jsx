@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Users, Plus, MessageCircle, Trash2, Eye, Search, Shield, X, Save, Zap, UserPlus, CreditCard, CheckCircle, XCircle } from 'lucide-react';
+import { Users, Plus, MessageCircle, Trash2, Eye, Search, Shield, X, Save, Zap, UserPlus, CreditCard, CheckCircle, XCircle, PhoneCall } from 'lucide-react';
 
 const Admin = () => {
   const {
     adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions,
     addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline,
-    approvePayment, rejectPayment,
+    approvePayment, rejectPayment, triggerCall,
     AVATAR_POOL_F, AVATAR_POOL_M,
   } = useApp();
 
@@ -165,7 +165,15 @@ const Admin = () => {
                     <img src={chatTarget.avatar} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />
                     <span style={{ color: '#fff', fontWeight: 600, fontSize: '0.9rem' }}>Chat avec {chatTarget.name}</span>
                   </div>
-                  <button onClick={() => setChatTarget(null)} style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }}><X size={16} /></button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    {selectedProfile && (
+                      <button onClick={() => triggerCall(chatTarget.id, selectedProfile)} title="Simuler Appert Entrant"
+                        style={{ color: '#fff', cursor: 'pointer', background: 'rgba(255,255,255,0.2)', border: 'none', padding: '0.3rem', borderRadius: '50%', display: 'flex' }}>
+                        <PhoneCall size={14} />
+                      </button>
+                    )}
+                    <button onClick={() => setChatTarget(null)} style={{ color: '#fff', cursor: 'pointer', background: 'none', border: 'none' }}><X size={16} /></button>
+                  </div>
                 </div>
 
                 {/* Profile picker */}

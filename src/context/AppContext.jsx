@@ -79,6 +79,10 @@ export const AppProvider = ({ children }) => {
   // Nouveaux états pour gérer les paiements Wave
   const [paymentRequests, setPaymentRequests] = useState([]);
   const [userSubscriptions, setUserSubscriptions] = useState({}); // { userId: { plan: 'VIP', expiry: Date } }
+  const [incomingCall, setIncomingCall] = useState(null); // { userId, profile: { id, name, image } }
+
+  const triggerCall = (userId, profile) => setIncomingCall({ userId, profile });
+  const clearCall = () => setIncomingCall(null);
 
 
 
@@ -208,9 +212,9 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions,
+      adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions, incomingCall,
       addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline, sendUserMessage,
-      submitPayment, approvePayment, rejectPayment,
+      submitPayment, approvePayment, rejectPayment, triggerCall, clearCall,
       AVATAR_POOL_F, AVATAR_POOL_M,
     }}>
       {children}

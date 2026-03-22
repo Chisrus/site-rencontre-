@@ -3,7 +3,7 @@ import { Search, MoreVertical, Send, Phone, Video, Heart, Lock, Star, Zap, Crown
 import { useApp } from '../context/AppContext';
 
 const Messages = () => {
-  const { adminProfiles, chatHistory, sendUserMessage, submitPayment, userSubscriptions } = useApp();
+  const { adminProfiles, chatHistory, sendUserMessage, submitPayment, userSubscriptions, incomingCall, clearCall } = useApp();
   const CURRENT_USER_ID = 1; // Simulation: l'utilisateur connecté
   
   // Extraire les conversations actives pour l'utilisateur courant
@@ -65,9 +65,45 @@ const Messages = () => {
     }, 4000);
   };
 
+  const handleCallAttempt = () => {
+    if (!isPremium) {
+      setPaywallActive(true);
+    } else {
+      alert("Appel en cours de connexion... (Fonctionnalité Premium à venir)");
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 h-[85vh]">
       <div className="glass h-full rounded-2xl flex overflow-hidden relative">
+
+        {/* === INCOMING CALL OVERLAY === */}
+        {incomingCall && incomingCall.userId === CURRENT_USER_ID && (
+          <div className="absolute inset-0 bg-[#0f0e1a]/95 backdrop-blur-3xl z-[60] flex flex-col items-center justify-center animate-fade-in">
+            <h3 className="text-gold tracking-widest text-sm mb-12 uppercase font-semibold">Appel vidéo entrant...</h3>
+            
+            <div className="relative mb-8">
+              <div className="absolute inset-0 bg-rose/20 rounded-full animate-ping scale-150"></div>
+              <div className="absolute inset-0 bg-rose/40 rounded-full animate-pulse scale-125"></div>
+              <img src={incomingCall.profile.image} alt="Caller" className="w-32 h-32 rounded-full object-cover relative z-10 border-4 border-rose" />
+            </div>
+            
+            <h2 className="text-4xl text-white font-serif mb-2">{incomingCall.profile.name}</h2>
+            <p className="text-muted mb-16">Vous invite à rejoindre un appel vidéo</p>
+            
+            <div className="flex gap-12">
+              <button onClick={clearCall} className="w-16 h-16 bg-rose rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-[0_0_20px_rgba(225,29,72,0.5)]">
+                <Phone className="w-8 h-8 text-white transform rotate-[135deg]" fill="currentColor" />
+              </button>
+              <button 
+                onClick={() => { clearCall(); handleCallAttempt(); }} 
+                className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-[0_0_30px_rgba(34,197,94,0.6)] animate-bounce"
+              >
+                <Video className="w-8 h-8 text-white" fill="currentColor" />
+              </button>
+            </div>
+          </div>
+        )}
         
         {/* === PAYWALL MODAL === */}
         {paywallActive && (
@@ -207,8 +243,8 @@ const Messages = () => {
                 </div>
               </div>
               <div className="flex items-center gap-4 text-muted">
-                <button className="hover:text-gold transition-colors"><Phone className="w-5 h-5" /></button>
-                <button className="hover:text-gold transition-colors"><Video className="w-5 h-5" /></button>
+                <button onClick={handleCallAttempt} className="hover:text-gold transition-colors"><Phone className="w-5 h-5" /></button>
+                <button onClick={handleCallAttempt} className="hover:text-gold transition-colors"><Video className="w-5 h-5" /></button>
                 <button className="hover:text-gold transition-colors"><MoreVertical className="w-5 h-5" /></button>
               </div>
             </div>
