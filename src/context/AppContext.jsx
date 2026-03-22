@@ -75,6 +75,11 @@ export const AppProvider = ({ children }) => {
       { from: 'admin', profileId: 102, text: "Coucou ! J'adore ton énergie, on fait connaissance ?", time: "09:15", isBot: true }
     ]
   });
+  
+  // Nouveaux états pour gérer les paiements Wave
+  const [paymentRequests, setPaymentRequests] = useState([]);
+  const [userSubscriptions, setUserSubscriptions] = useState({}); // { userId: { plan: 'VIP', expiry: Date } }
+
 
 
 
@@ -174,10 +179,38 @@ export const AppProvider = ({ children }) => {
     return () => clearTimeout(timer);
   }, [chatHistory]);
 
+  /* ── Wave Payment Logic ── */
+  const submitPayment = (userId, plan, senderPhone) => {
+    setPaymentRequests(prev => [...prev, {
+      id: Date.now(),
+      userId,
+      plan,
+      senderPhone,
+      date: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      status: 'pending'
+    }]);
+  };
+
+  const approvePayment = (requestId, userId, plan) => {
+    // Retirer la requête
+    setPaymentRequests(prev => prev.filter(req => req.id !== requestId));
+    // Activer l'abonnement
+    setUserSubscriptions(prev => ({
+      ...prev,
+      [userId]: { plan, active: true }
+    }));
+  };
+
+  const rejectPayment = (requestId) => {
+    setPaymentRequests(prev => prev.filter(req => req.id !== requestId));
+  };
+
+
   return (
     <AppContext.Provider value={{
-      adminProfiles, registeredUsers, chatHistory,
+      adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions,
       addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline, sendUserMessage,
+      submitPayment, approvePayment, rejectPayment,
       AVATAR_POOL_F, AVATAR_POOL_M,
     }}>
       {children}

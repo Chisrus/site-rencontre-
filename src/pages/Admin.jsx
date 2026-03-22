@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { Users, Plus, MessageCircle, Trash2, Eye, Search, Shield, X, Save, Zap, UserPlus } from 'lucide-react';
+import { Users, Plus, MessageCircle, Trash2, Eye, Search, Shield, X, Save, Zap, UserPlus, CreditCard, CheckCircle, XCircle } from 'lucide-react';
 
 const Admin = () => {
   const {
-    adminProfiles, registeredUsers, chatHistory,
+    adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions,
     addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline,
+    approvePayment, rejectPayment,
     AVATAR_POOL_F, AVATAR_POOL_M,
   } = useApp();
+
 
   const [tab, setTab] = useState('users');
   const [search, setSearch] = useState('');
@@ -53,6 +55,7 @@ const Admin = () => {
   const TABS = [
     { key: 'users', label: 'Utilisateurs', icon: <Users size={15} /> },
     { key: 'profiles', label: `Profils admin (${adminProfiles.length})`, icon: <Shield size={15} /> },
+    { key: 'payments', label: `Dépôts Wave (${paymentRequests.length})`, icon: <CreditCard size={15} /> },
   ];
 
   return (
@@ -74,9 +77,9 @@ const Admin = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.85rem', marginBottom: '1.75rem' }}>
           {[
             { label: 'Inscrits', value: registeredUsers.length, color: 'var(--violet)' },
-            { label: 'Actifs', value: registeredUsers.filter(u => u.status === 'actif').length, color: '#10b981' },
+            { label: 'Paiements VIP', value: Object.keys(userSubscriptions).length, color: '#1fb6ff' },
             { label: 'Profils admin', value: adminProfiles.length, color: 'var(--rose)' },
-            { label: 'Conversations', value: Object.keys(chatHistory).length, color: '#f59e0b' },
+            { label: 'Requêtes Wave', value: paymentRequests.length, color: '#f59e0b' },
           ].map((s, i) => (
             <div key={i} className="card" style={{ padding: '1rem', textAlign: 'center' }}>
               <div style={{ fontSize: '1.6rem', fontWeight: 800, color: s.color }}>{s.value}</div>
@@ -331,6 +334,66 @@ const Admin = () => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ════ TAB: PAYMENTS ════ */}
+        {tab === 'payments' && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: '1rem' }}>
+              <CreditCard size={20} color="#1fb6ff" />
+              <h2 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0 }}>Dépôts Wave en attente</h2>
+            </div>
+            
+            {paymentRequests.length === 0 ? (
+              <div className="card" style={{ padding: '3rem 1rem', textAlign: 'center', borderRadius: 16 }}>
+                <CheckCircle size={40} color="var(--border-soft)" style={{ margin: '0 auto 1rem' }} />
+                <p style={{ color: 'var(--text-muted)' }}>Aucun dépôt en attente de vérification.</p>
+              </div>
+            ) : (
+              <div className="card" style={{ overflow: 'hidden', borderRadius: 14 }}>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                    <thead>
+                      <tr style={{ background: '#f0f9ff', textAlign: 'left' }}>
+                        {['Utilisateur', 'Plan demandé', 'Numéro Wave (Envoyeur)', 'Heure', 'Vérification'].map(h => (
+                          <th key={h} style={{ padding: '0.75rem 0.85rem', fontWeight: 600, color: '#0369a1', fontSize: '0.8rem' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {paymentRequests.map((req, i) => {
+                        const user = registeredUsers.find(u => u.id === req.userId) || { name: 'User ' + req.userId };
+                        return (
+                          <tr key={req.id} style={{ borderBottom: '1px solid var(--border-soft)', background: i % 2 === 0 ? '#fff' : 'var(--bg-soft)' }}>
+                            <td style={{ padding: '0.85rem', fontWeight: 600 }}>{user.name}</td>
+                            <td style={{ padding: '0.85rem' }}>
+                              <span className="badge" style={{ background: 'rgba(212,165,116,0.15)', color: 'var(--gold)', border: '1px solid rgba(212,165,116,0.3)' }}>
+                                {req.plan.name} ({req.plan.price} F)
+                              </span>
+                            </td>
+                            <td style={{ padding: '0.85rem', fontFamily: 'monospace', fontSize: '1.1rem', fontWeight: 'bold', color: '#0284c7' }}>
+                              {req.senderPhone}
+                            </td>
+                            <td style={{ padding: '0.85rem', color: 'var(--text-muted)' }}>{req.date}</td>
+                            <td style={{ padding: '0.85rem' }}>
+                              <div style={{ display: 'flex', gap: 8 }}>
+                                <button onClick={() => approvePayment(req.id, req.userId, req.plan.name)} className="btn" style={{ background: '#10b981', color: '#fff', padding: '0.4rem 0.75rem', fontSize: '0.75rem', gap: 4 }}>
+                                  <CheckCircle size={14} /> Approuver (Débloque le chat)
+                                </button>
+                                <button onClick={() => rejectPayment(req.id)} className="btn" style={{ background: 'var(--rose-soft)', color: 'var(--rose)', padding: '0.4rem 0.75rem', fontSize: '0.75rem', gap: 4 }}>
+                                  <XCircle size={14} /> Rejeter
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
