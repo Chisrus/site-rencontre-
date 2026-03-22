@@ -3,6 +3,10 @@ import { useApp } from '../context/AppContext';
 import { Users, Plus, MessageCircle, Trash2, Eye, Search, Shield, X, Save, Zap, UserPlus, CreditCard, CheckCircle, XCircle, PhoneCall } from 'lucide-react';
 
 const Admin = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminUser, setAdminUser] = useState('');
+  const [accessCode, setAccessCode] = useState('');
+
   const {
     adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions,
     addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline,
@@ -57,6 +61,50 @@ const Admin = () => {
     { key: 'profiles', label: `Profils admin (${adminProfiles.length})`, icon: <Shield size={15} /> },
     { key: 'payments', label: `Dépôts Wave (${paymentRequests.length})`, icon: <CreditCard size={15} /> },
   ];
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (adminUser.toLowerCase() === 'admin' && accessCode === '@G4XDE04@') { 
+      setIsAuthenticated(true);
+    } else {
+      alert('Identifiants incorrects');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div style={{ minHeight: '85vh', background: 'var(--bg-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+        <div className="card animate-fade-up" style={{ width: '100%', maxWidth: 360, padding: '2rem', borderRadius: 24, textAlign: 'center' }}>
+          <div style={{ display: 'inline-flex', padding: '1rem', background: 'var(--violet-soft)', borderRadius: '50%', marginBottom: '1.5rem' }}>
+            <Shield size={32} color="var(--violet)" />
+          </div>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '0.5rem' }}>Accès Administrateur</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>Veuillez vous identifier.</p>
+          <form onSubmit={handleLogin}>
+            <input 
+              type="text" 
+              className="input" 
+              placeholder="Nom d'utilisateur" 
+              value={adminUser} 
+              onChange={e => setAdminUser(e.target.value)} 
+              style={{ marginBottom: '0.75rem', textAlign: 'center' }} 
+            />
+            <input 
+              type="password" 
+              className="input" 
+              placeholder="Mot de passe" 
+              value={accessCode} 
+              onChange={e => setAccessCode(e.target.value)} 
+              style={{ marginBottom: '1.25rem', textAlign: 'center', letterSpacing: 4 }} 
+            />
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.75rem', fontSize: '0.9rem', fontWeight: 700 }}>
+              Se connecter
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight: '85vh', background: 'var(--bg-soft)', padding: '2rem 0' }}>
