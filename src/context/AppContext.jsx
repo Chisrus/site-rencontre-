@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 /* ── Default admin profiles (visible on Discover by all users) ── */
 const DEFAULT_ADMIN_PROFILES = [
@@ -67,7 +67,16 @@ export const useApp = () => useContext(AppContext);
 export const AppProvider = ({ children }) => {
   const [adminProfiles, setAdminProfiles] = useState(DEFAULT_ADMIN_PROFILES);
   const [registeredUsers, setRegisteredUsers] = useState(DEFAULT_USERS);
-  const [chatHistory, setChatHistory] = useState({});
+  const [chatHistory, setChatHistory] = useState({
+    "1-101": [
+      { from: 'admin', profileId: 101, text: "Salut ! J'ai vu ton profil et tu me plais beaucoup 😊", time: "10:30", isBot: true }
+    ],
+    "1-102": [
+      { from: 'admin', profileId: 102, text: "Coucou ! J'adore ton énergie, on fait connaissance ?", time: "09:15", isBot: true }
+    ]
+  });
+
+
 
   /* ── Add a single admin profile ── */
   const addAdminProfile = (profile) => {
@@ -122,20 +131,53 @@ export const AppProvider = ({ children }) => {
   };
 
   /* ── Send message as admin profile ── */
-  const sendAdminMessage = (userId, profileId, text) => {
+  const sendAdminMessage = (userId, profileId, text, isBot = false) => {
     const key = `${userId}-${profileId}`;
     setChatHistory(prev => ({
       ...prev,
       [key]: [...(prev[key] || []),
-        { from: 'admin', profileId, text, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
+        { from: 'admin', profileId, text, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }), isBot }
       ]
     }));
   };
 
+  /* ── Send message as regular user ── */
+  const sendUserMessage = (userId, profileId, text) => {
+    const key = `${userId}-${profileId}`;
+    setChatHistory(prev => ({
+      ...prev,
+      [key]: [...(prev[key] || []),
+        { from: 'user', profileId, text, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) }
+      ]
+    }));
+  };
+
+  /* ── Bot Script Execution ── */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      Object.entries(chatHistory).forEach(([key, msgs]) => {
+        const userMsgs = msgs.filter(m => m.from === 'user');
+        const botMsgs = msgs.filter(m => m.from === 'admin' && m.isBot);
+        const [userId, profileId] = key.split('-');
+        
+        // Scenario 1: User replied once -> Bot asks for photo
+        if (userMsgs.length === 1 && botMsgs.length === 1) {
+          sendAdminMessage(userId, parseInt(profileId), "Tu as l'air super ! Est-ce que tu pourrais m'envoyer une ou deux photos de toi ? 😉", true);
+        }
+        // Scenario 2: User replied twice -> Bot sends the "Splendide" meeting message
+        else if (userMsgs.length === 2 && botMsgs.length === 2) {
+          sendAdminMessage(userId, parseInt(profileId), "T'es splendide ✨ Je peux avoir ton contact ou tu choisis un resto bien chic pour qu'on puisse se voir le plus tôt possible ? Je gère tout ! 🍷", true);
+        }
+      });
+    }, 2000); // 2 seconds delay for bot realism
+
+    return () => clearTimeout(timer);
+  }, [chatHistory]);
+
   return (
     <AppContext.Provider value={{
       adminProfiles, registeredUsers, chatHistory,
-      addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline,
+      addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline, sendUserMessage,
       AVATAR_POOL_F, AVATAR_POOL_M,
     }}>
       {children}
