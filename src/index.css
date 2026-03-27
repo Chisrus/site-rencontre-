@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* ────────────────────────────────────────────────
    RencontreDeluxe — V3 Style (inspired by MonPain.ci)
    Palette : Violet/Indigo + Lavande + Blanc pur
@@ -253,3 +257,32 @@ img { display: block; max-width: 100%; }
 }
 .badge-violet { background: var(--violet-soft); color: var(--violet); }
 .badge-rose   { background: var(--rose-soft); color: var(--rose); }
+
+/* ─── SWIPE ANIMATIONS ─── */
+@keyframes swipeLeft {
+  0% { transform: translateX(0) rotate(0); opacity: 1; }
+  100% { transform: translateX(-200%) rotate(-30deg); opacity: 0; }
+}
+@keyframes swipeRight {
+  0% { transform: translateX(0) rotate(0); opacity: 1; }
+  100% { transform: translateX(200%) rotate(30deg); opacity: 0; }
+}
+@keyframes swipeUp {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-150%) scale(0.8); opacity: 0; }
+}
+
+.swipe-left { animation: swipeLeft 0.5s ease-out forwards; }
+.swipe-right { animation: swipeRight 0.5s ease-out forwards; }
+.swipe-up { animation: swipeUp 0.6s ease-out forwards; }
+
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.bg-gradient-gold {
+  background: linear-gradient(135deg, #d4a574 0%, #b8860b 100%);
+}

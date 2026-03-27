@@ -3,26 +3,31 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 /* ── Default admin profiles (visible on Discover by all users) ── */
 const DEFAULT_ADMIN_PROFILES = [
   {
-    id: 101, name: "Sophie", age: 25, location: "Abidjan, C.I.",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=550&fit=crop&crop=face",
-    bio: "Passionnée de voyages et de cuisine 🌍", interests: ["Voyages", "Cuisine", "Danse"],
+    id: 101, name: "Awa", age: 24, location: "Abidjan, C.I.",
+    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=550&fit=crop&crop=face",
+    bio: "Passionnée de voyages et d'entrepreneuriat 🌍", interests: ["Business", "Cuisine", "Mode"],
     matchPercentage: 92, isVIP: true, isNew: false, isAdmin: true, online: true,
   },
   {
-    id: 102, name: "Marc", age: 30, location: "Paris, France",
-    image: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=400&h=550&fit=crop&crop=face",
-    bio: "Entrepreneur, j'aime les discussions profondes", interests: ["Business", "Sport", "Cinéma"],
+    id: 102, name: "Koffi", age: 29, location: "Yamoussoukro, C.I.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=550&fit=crop&crop=face",
+    bio: "Ingénieur, j'aime le sport et les débats d'idées", interests: ["Tech", "Foot", "Musique"],
     matchPercentage: 87, isVIP: false, isNew: true, isAdmin: true, online: false,
   },
+  {
+    id: 103, name: "Yasmine", age: 26, location: "Abidjan, C.I.",
+    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=550&fit=crop&crop=face",
+    bio: "Vidéaste et influenceuse mode ✨", interests: ["Cinéma", "Danse", "Luxe"],
+    matchPercentage: 95, isVIP: true, isNew: true, isAdmin: true, online: true,
+  }
 ];
 
 /* ── Default registered users ── */
 const DEFAULT_USERS = [
-  { id: 1, name: "Kouadio Serge", email: "+225 07 89 12 34", city: "Abidjan", date: "21/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" },
-  { id: 2, name: "Aminata Diallo", email: "aminata@gmail.com", city: "Dakar", date: "21/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face" },
-  { id: 3, name: "Jean-Marc Dupont", email: "jm.dupont@mail.fr", city: "Paris", date: "20/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" },
-  { id: 4, name: "Fatou Bamba", email: "+225 05 44 78 90", city: "Abidjan", date: "20/03/2026", status: "suspendu", avatar: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=80&h=80&fit=crop&crop=face" },
-  { id: 5, name: "Moussa Traoré", email: "moussa.t@yahoo.fr", city: "Bamako", date: "19/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1522556189639-b150ed9c4330?w=80&h=80&fit=crop&crop=face" },
+  { id: 1, name: "Serge N'Guessan", email: "+225 07 89 12 34", city: "Abidjan", date: "21/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" },
+  { id: 2, name: "Fatoumata K.", email: "fatou@mail.ci", city: "Abidjan", date: "21/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=80&h=80&fit=crop&crop=face" },
+  { id: 3, name: "Jean-Eudes B.", email: "jeaneudes@gmail.com", city: "Grand-Bassam", date: "20/03/2026", status: "actif", avatar: "https://images.unsplash.com/photo-1522556189639-b150ed9c4330?w=80&h=80&fit=crop&crop=face" },
+  { id: 4, name: "Grace Emmanuella", email: "+225 05 44 78 90", city: "San-Pedro", date: "20/03/2026", status: "suspendu", avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face" },
 ];
 
 /* ── Unsplash avatar pool for quick profile creation ── */

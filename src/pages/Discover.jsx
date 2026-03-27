@@ -1,60 +1,127 @@
-import { useState } from 'react';
-import ProfileCard from '../components/ProfileCard';
-import { SlidersHorizontal } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import SwipeCard from '../components/SwipeCard';
+import { SlidersHorizontal, RefreshCcw, Heart } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-
-/* ── Base real profiles (non-admin, always shown) ── */
-const BASE_PROFILES = [
-  { id: 1001, name: "Éléonore", age: 28, location: "Paris, France", image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=550&fit=crop&crop=face", matchPercentage: 94, isVIP: true, isNew: false, interests: ["Gastronomie", "Art", "Voyages"] },
-  { id: 1002, name: "Alexandre", age: 32, location: "Genève, Suisse", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=550&fit=crop&crop=face", matchPercentage: 88, isVIP: false, isNew: false, interests: ["Sport", "Musique", "Finance"] },
-];
-
-const TABS = ['Tous', 'VIP', 'Nouveaux'];
+import { Link } from 'react-router-dom';
 
 const Discover = () => {
   const { adminProfiles } = useApp();
   const [tab, setTab] = useState('Tous');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [history, setHistory] = useState([]); // Pourrait servir à "Rewind" si Premium
 
   /* Merge base profiles + admin-created profiles */
-  const allProfiles = [...adminProfiles, ...BASE_PROFILES];
+  // J'utilise principalement adminProfiles ici car ils ont été mis à jour avec les photos réalistes
+  const allProfiles = useMemo(() => {
+    return [...adminProfiles].sort(() => Math.random() - 0.5);
+  }, [adminProfiles]);
 
-  const filtered = allProfiles.filter(p => {
-    if (tab === 'VIP') return p.isVIP;
-    if (tab === 'Nouveaux') return p.isNew;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    return allProfiles.filter(p => {
+      if (tab === 'VIP') return p.isVIP;
+      if (tab === 'Nouveaux') return p.isNew;
+      return true;
+    });
+  }, [allProfiles, tab]);
+
+  const handleSwipe = (direction, profileId) => {
+    console.log(`Swiped ${direction} on ${profileId}`);
+    setHistory(prev => [...prev, { id: profileId, direction }]);
+    setCurrentIndex(prev => prev + 1);
+  };
+
+  const handleReset = () => {
+    setCurrentIndex(0);
+    setHistory([]);
+  };
+
+  const currentProfile = filtered[currentIndex];
+  const nextProfile = filtered[currentIndex + 1];
 
   return (
-    <div style={{ minHeight: '80vh', background: 'var(--bg-soft)', paddingTop: '2.5rem', paddingBottom: '4rem' }}>
-      <div className="container">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <h1 style={{ fontWeight: 700, fontSize: '1.75rem', marginBottom: '0.25rem' }}>Découvrir 🔍</h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{filtered.length} profils correspondent</p>
+    <div className="min-h-screen bg-[#0a0a0f] pt-6 pb-20 overflow-hidden">
+      <div className="container max-w-lg mx-auto h-[85vh] flex flex-col">
+        
+        {/* Header Navigation */}
+        <div className="flex items-center justify-between mb-8 px-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-bold text-white font-serif tracking-tight text-pinterest">Découverte</h1>
+            <div className="px-2 py-0.5 bg-pinterest/10 border border-pinterest/20 rounded text-[10px] text-pinterest font-bold uppercase tracking-widest">Premium</div>
           </div>
-          <button className="btn btn-outline" style={{ gap: '0.5rem', fontSize: '0.88rem', display: 'flex', alignItems: 'center' }}>
-            <SlidersHorizontal size={16} /> Filtres avancés
+          <button className="p-2.5 rounded-full bg-white/5 border border-white/10 text-white/60 hover:text-white transition-colors">
+            <SlidersHorizontal size={20} />
           </button>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-          {TABS.map(t => (
-            <button key={t} onClick={() => setTab(t)} style={{
-              padding: '0.5rem 1.25rem', borderRadius: 999, fontWeight: 600,
-              fontSize: '0.85rem', cursor: 'pointer', border: '1.5px solid',
-              transition: 'all 0.2s', fontFamily: 'var(--font-main)',
-              background: tab === t ? 'var(--violet)' : 'transparent',
-              color: tab === t ? '#fff' : 'var(--text-body)',
-              borderColor: tab === t ? 'var(--violet)' : 'var(--border-soft)',
-            }}>
+        {/* Tab Switcher */}
+        <div className="flex gap-2 mb-8 px-4 overflow-x-auto no-scrollbar">
+          {['Tous', 'VIP', 'Nouveaux'].map(t => (
+            <button 
+              key={t} 
+              onClick={() => { setTab(t); setCurrentIndex(0); }}
+              className={`px-6 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
+                tab === t 
+                  ? 'bg-white text-black border-white' 
+                  : 'bg-transparent text-white/40 border-white/10 hover:border-white/25'
+              }`}
+            >
               {t}
             </button>
           ))}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.25rem' }}>
-          {filtered.map(p => <ProfileCard key={p.id} profile={p} />)}
+        {/* Card Stack Area */}
+        <div className="flex-1 relative mx-4">
+          {currentProfile ? (
+            <>
+              {/* Card Background (Next profile preview) */}
+              {nextProfile && (
+                <div className="absolute inset-0 scale-[0.92] translateY-4 opacity-40 blur-sm pointer-events-none">
+                   <div className="w-full h-full rounded-3xl overflow-hidden bg-[#151520] border border-white/5">
+                      <img src={nextProfile.image} alt="Next" className="w-full h-full object-cover grayscale" />
+                   </div>
+                </div>
+              )}
+
+              {/* Main Active Card */}
+              <SwipeCard 
+                key={currentProfile.id}
+                profile={currentProfile} 
+                active={true}
+                onSwipe={handleSwipe}
+              />
+            </>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center animate-fade-in px-8">
+              <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6 border border-white/10">
+                <RefreshCcw size={40} className="text-gold opacity-50" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-3">Plus de profils autour de vous !</h2>
+              <p className="text-white/40 text-sm mb-10 leading-relaxed">
+                Vous avez vu tous les profils correspondant à vos critères pour aujourd'hui. Elargissez vos filtres ou revenez plus tard !
+              </p>
+              <button 
+                onClick={handleReset}
+                className="flex items-center gap-2 px-8 py-4 bg-pinterest text-white font-bold rounded-2xl hover:scale-105 transition-transform shadow-lg shadow-pinterest/20"
+              >
+                Recommencer <RefreshCcw size={18} />
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Bottom Stats (Optional premium touch) */}
+        <div className="mt-8 flex justify-center gap-12 px-4 opacity-50">
+           <div className="text-center">
+              <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-1">Tes Matches</p>
+              <p className="text-white font-bold">12</p>
+           </div>
+           <div className="text-center">
+              <p className="text-[10px] text-white/40 font-bold uppercase tracking-widest mb-1">Vues Profil</p>
+              <p className="text-white font-bold">48</p>
+           </div>
+        </div>
+
       </div>
     </div>
   );
