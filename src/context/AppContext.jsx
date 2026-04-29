@@ -84,10 +84,28 @@ export const AppProvider = ({ children }) => {
   // Nouveaux états pour gérer les paiements Wave
   const [paymentRequests, setPaymentRequests] = useState([]);
   const [userSubscriptions, setUserSubscriptions] = useState({}); // { userId: { plan: 'VIP', expiry: Date } }
-  const [incomingCall, setIncomingCall] = useState(null); // { userId, profile: { id, name, image } }
-
+  const [matches, setMatches] = useState([
+    {
+      id: 103,
+      name: "Yasmine",
+      image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=550&fit=crop&crop=face",
+      date: new Date().toLocaleDateString('fr-FR')
+    }
+  ]);
+  
   const triggerCall = (userId, profile) => setIncomingCall({ userId, profile });
   const clearCall = () => setIncomingCall(null);
+
+  const addMatch = (profile) => {
+    if (!matches.find(m => m.id === profile.id)) {
+      setMatches(prev => [{
+        id: profile.id,
+        name: profile.name,
+        image: profile.image,
+        date: new Date().toLocaleDateString('fr-FR')
+      }, ...prev]);
+    }
+  };
 
 
 
@@ -217,9 +235,9 @@ export const AppProvider = ({ children }) => {
 
   return (
     <AppContext.Provider value={{
-      adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions, incomingCall,
+      adminProfiles, registeredUsers, chatHistory, paymentRequests, userSubscriptions, incomingCall, matches,
       addAdminProfile, quickCreateProfiles, removeAdminProfile, sendAdminMessage, toggleOnline, sendUserMessage,
-      submitPayment, approvePayment, rejectPayment, triggerCall, clearCall,
+      submitPayment, approvePayment, rejectPayment, triggerCall, clearCall, addMatch,
       AVATAR_POOL_F, AVATAR_POOL_M,
     }}>
       {children}

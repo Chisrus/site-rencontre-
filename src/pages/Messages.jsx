@@ -3,12 +3,15 @@ import { Search, MoreVertical, Send, Phone, Video, Heart, Lock, Star, Zap, Crown
 import { useApp } from '../context/AppContext';
 
 const Messages = () => {
-  const { adminProfiles, chatHistory, sendUserMessage, submitPayment, userSubscriptions, incomingCall, clearCall } = useApp();
+  const { adminProfiles, chatHistory, sendUserMessage, submitPayment, userSubscriptions, incomingCall, clearCall, matches } = useApp();
   const CURRENT_USER_ID = 1;
   
   const conversations = adminProfiles.filter(p => chatHistory[`${CURRENT_USER_ID}-${p.id}`] !== undefined);
   
-  const [activeChat, setActiveChat] = useState(conversations[0] || null);
+  // Les matchs qui n'ont pas encore de conversation
+  const newMatches = matches.filter(m => chatHistory[`${CURRENT_USER_ID}-${m.id}`] === undefined);
+  
+  const [activeChat, setActiveChat] = useState(conversations[0] || (newMatches.length > 0 ? adminProfiles.find(p => p.id === newMatches[0].id) : null));
   const [message, setMessage] = useState('');
   const [paywallActive, setPaywallActive] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -208,6 +211,34 @@ const Messages = () => {
               <input type="text" placeholder="Rechercher..." className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm focus:border-white/20 focus:bg-white/[0.07] focus:outline-none transition-colors text-white placeholder-white/30" />
             </div>
           </div>
+
+          {/* ── NEW MATCHES SECTION ── */}
+          {newMatches.length > 0 && (
+            <div className="px-6 py-4 border-b border-white/5">
+              <h3 className="text-[10px] font-bold text-[#eab308] uppercase tracking-[0.2em] mb-4">Nouveaux Matchs</h3>
+              <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                {newMatches.map(match => {
+                  const profile = adminProfiles.find(p => p.id === match.id);
+                  if (!profile) return null;
+                  return (
+                    <div 
+                      key={match.id} 
+                      onClick={() => setActiveChat(profile)}
+                      className="flex flex-col items-center gap-2 cursor-pointer group shrink-0"
+                    >
+                      <div className={`relative p-0.5 rounded-full border-2 ${activeChat?.id === profile.id ? 'border-[#eab308]' : 'border-transparent group-hover:border-white/20'} transition-all`}>
+                        <img src={profile.image} alt={profile.name} className="w-14 h-14 rounded-full object-cover border border-white/10" />
+                        <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#eab308] rounded-full border-2 border-[#06060c] flex items-center justify-center">
+                          <Heart size={8} fill="black" className="text-black" />
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-white/60 font-medium group-hover:text-white transition-colors">{profile.name}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="flex-1 overflow-y-auto no-scrollbar pb-4 p-3 space-y-1">
             {conversations.map(chat => {

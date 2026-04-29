@@ -1,12 +1,16 @@
 import { useState, useMemo } from 'react';
 import SwipeCard from '../components/SwipeCard';
-import { SlidersHorizontal, RefreshCcw, Sparkles } from 'lucide-react';
+import { SlidersHorizontal, RefreshCcw, Sparkles, MessageCircle, Heart, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Discover = () => {
-  const { adminProfiles } = useApp();
+  const { adminProfiles, addMatch } = useApp();
+  const navigate = useNavigate();
   const [tab, setTab] = useState('Tous');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showMatch, setShowMatch] = useState(null); // Profile object when a match occurs
 
   // Merge base profiles + admin-created profiles
   const allProfiles = useMemo(() => {
@@ -23,7 +27,14 @@ const Discover = () => {
 
   const handleSwipe = (direction, profileId) => {
     console.log(`Swiped ${direction} on ${profileId}`);
-    setCurrentIndex(prev => prev + 1);
+    
+    if (direction === 'right') {
+      const profile = filtered[currentIndex];
+      addMatch(profile);
+      setShowMatch(profile);
+    } else {
+      setCurrentIndex(prev => prev + 1);
+    }
   };
 
   const handleReset = () => {
@@ -115,6 +126,88 @@ const Discover = () => {
         </div>
 
       </div>
+
+      {/* ── MATCH MODAL ── */}
+      <AnimatePresence>
+        {showMatch && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#06060c]/90 backdrop-blur-2xl"
+          >
+            <div className="relative w-full max-w-md text-center">
+              <motion.div
+                initial={{ scale: 0.5, y: 50, opacity: 0 }}
+                animate={{ scale: 1, y: 0, opacity: 1 }}
+                transition={{ type: "spring", damping: 15 }}
+                className="mb-8"
+              >
+                <h2 className="text-6xl md:text-7xl font-['Playfair_Display',serif] text-white font-black italic tracking-tighter mb-2">
+                  Match !
+                </h2>
+                <p className="text-[#eab308] uppercase tracking-[0.4em] text-xs font-bold">Vous vous plaisez mutuellement</p>
+              </motion.div>
+
+              <div className="flex items-center justify-center gap-4 mb-12">
+                <motion.div 
+                  initial={{ x: -50, rotate: -10, opacity: 0 }}
+                  animate={{ x: 0, rotate: -5, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="w-32 h-44 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl"
+                >
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=600&fit=crop" alt="Vous" className="w-full h-full object-cover" />
+                </motion.div>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                  className="w-12 h-12 rounded-full bg-gradient-to-br from-[#d4a574] to-[#b8860b] flex items-center justify-center z-10 shadow-[0_0_30px_rgba(212,165,116,0.5)]"
+                >
+                  <Heart size={24} fill="black" />
+                </motion.div>
+                <motion.div 
+                  initial={{ x: 50, rotate: 10, opacity: 0 }}
+                  animate={{ x: 0, rotate: 5, opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="w-32 h-44 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl"
+                >
+                  <img src={showMatch.image} alt={showMatch.name} className="w-full h-full object-cover" />
+                </motion.div>
+              </div>
+
+              <div className="space-y-4 px-8">
+                <motion.button
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  onClick={() => navigate('/messages')}
+                  className="w-full py-4 bg-gradient-to-r from-[#d4a574] to-[#b8860b] text-black font-bold rounded-full shadow-[0_10px_40px_rgba(212,165,116,0.3)] hover:scale-105 transition-transform flex items-center justify-center gap-3 uppercase tracking-widest text-xs"
+                >
+                  <MessageCircle size={18} />
+                  Envoyer un message
+                </motion.button>
+                <motion.button
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  onClick={() => { setShowMatch(null); setCurrentIndex(prev => prev + 1); }}
+                  className="w-full py-4 bg-white/5 border border-white/10 text-white/70 font-bold rounded-full hover:bg-white/10 transition-colors uppercase tracking-widest text-xs"
+                >
+                  Continuer à jouer
+                </motion.button>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => { setShowMatch(null); setCurrentIndex(prev => prev + 1); }}
+              className="absolute top-8 right-8 p-3 bg-white/5 hover:bg-white/10 rounded-full text-white/50 transition-all"
+            >
+              <X size={24} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
