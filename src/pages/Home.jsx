@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, Shield, Zap, Users, ChevronRight, Star } from 'lucide-react';
+import { Heart, Shield, Zap, Users, ChevronRight, Star, Sparkles, ArrowRight, MessageCircle, MapPin } from 'lucide-react';
 
 const PROFILE_PHOTOS = [
   "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&h=400&fit=crop&crop=face",
@@ -10,102 +10,275 @@ const PROFILE_PHOTOS = [
   "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&h=400&fit=crop&crop=face",
 ];
 
-const FEATURES = [
-  { icon: <Shield size={26} />, title: "Discrétion Totale", desc: "Votre vie privée est notre priorité absolue. Échanges hautement sécurisés." },
-  { icon: <Star size={26} />, title: "Élite Ivoirienne", desc: "Une communauté exclusive de profils triés sur le volet à Abidjan." },
-  { icon: <Zap size={26} />, title: "Connexion Flash", desc: "Swipez, Matchez, Rencontrez. La simplicité au service du luxe." },
-];
+/* ── Stat bubble ── */
+const Stat = ({ icon, label, val }) => (
+  <div className="flex flex-col items-center gap-1 px-8 py-5 rounded-2xl"
+    style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', backdropFilter: 'blur(20px)' }}>
+    <div className="text-3xl font-black text-white" style={{ fontFamily: "'Playfair Display', serif" }}>{val}</div>
+    <div className="text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.55)' }}>{label}</div>
+  </div>
+);
+
+/* ── Feature card ── */
+const FeatureCard = ({ icon, color, title, desc, delay }) => (
+  <div
+    className="group relative p-8 rounded-[2rem] transition-all duration-500 hover:-translate-y-2"
+    style={{
+      background: 'rgba(255,255,255,0.06)',
+      border: '1px solid rgba(255,255,255,0.1)',
+      backdropFilter: 'blur(20px)',
+      animation: `fadeUp 0.8s ease-out ${delay}s both`,
+      boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+    }}
+  >
+    <div className="absolute inset-0 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+      style={{ background: `radial-gradient(circle at 30% 30%, ${color}15, transparent 70%)` }} />
+    
+    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 text-2xl"
+      style={{ background: `${color}20`, border: `1px solid ${color}40` }}>
+      {icon}
+    </div>
+    <h3 className="text-xl font-bold mb-3 text-white">{title}</h3>
+    <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '14px', lineHeight: 1.7 }}>{desc}</p>
+  </div>
+);
+
+/* ── Profile Preview Card ── */
+const ProfilePreview = ({ src, name, age, city, delay }) => (
+  <div
+    className="group relative rounded-[1.5rem] overflow-hidden cursor-pointer hover:-translate-y-3 transition-all duration-500"
+    style={{
+      animation: `fadeUp 1s ease-out ${delay}s both`,
+      boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
+      border: '1px solid rgba(255,255,255,0.1)',
+    }}
+  >
+    <img src={src} alt={name} className="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110" />
+    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80" />
+    
+    {/* Love badge */}
+    <div className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center text-white bg-pink-500 shadow-[0_4px_16px_rgba(236,72,153,0.5)] group-hover:scale-125 transition-transform">
+      <Heart size={16} fill="white" />
+    </div>
+
+    <div className="absolute bottom-0 left-0 right-0 p-5">
+      <h3 className="text-white font-bold text-lg" style={{ fontFamily: "'Playfair Display', serif" }}>{name}, <span className="font-normal">{age}</span></h3>
+      <p className="flex items-center gap-1.5 text-white/70 text-xs mt-1">
+        <MapPin size={11} className="text-pink-400" /> {city}
+      </p>
+    </div>
+  </div>
+);
 
 const Home = () => {
   return (
-    <div className="bg-bg-dark text-white min-h-screen font-sans">
+    <div className="text-white min-h-screen font-sans overflow-x-hidden" style={{ position: 'relative' }}>
 
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden px-6">
-        
-        {/* Background Gradients */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-pinterest/5 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-rose-500/5 rounded-full blur-[120px] animate-pulse delay-1000" />
+      {/* ── Vibrant background orbs ── */}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 0 }}>
+        <div style={{ position: 'absolute', top: '-15%', left: '-10%', width: 700, height: 700, background: 'radial-gradient(circle, rgba(236,72,153,0.25) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', top: '20%', right: '-15%', width: 600, height: 600, background: 'radial-gradient(circle, rgba(234,179,8,0.15) 0%, transparent 70%)', borderRadius: '50%' }} />
+        <div style={{ position: 'absolute', bottom: '-10%', left: '30%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)', borderRadius: '50%' }} />
+      </div>
 
-        {/* Floating Photo Mosaic */}
-        <div className="absolute inset-0 z-0 opacity-10 [mask-image:linear-gradient(to_bottom,black_0%,transparent_100%)] pointer-events-none">
-           <div className="grid grid-cols-3 md:grid-cols-6 gap-4 p-4 grayscale">
-              {PROFILE_PHOTOS.map((src, i) => (
-                <div key={i} className={`rounded-3xl overflow-hidden aspect-[3/4] ${i % 2 === 0 ? 'translate-y-12' : '-translate-y-12'}`}>
-                   <img src={src} alt="Elite" className="w-full h-full object-cover" />
-                </div>
-              ))}
-           </div>
+      {/* ══════════════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════════════ */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-28 pb-20"
+        style={{ zIndex: 1 }}>
+
+        {/* Pill badge */}
+        <div className="mb-8 inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-[11px] uppercase tracking-[0.25em] animate-[fadeUp_0.8s_ease-out_both]"
+          style={{ background: 'linear-gradient(90deg, rgba(236,72,153,0.2), rgba(234,179,8,0.2))', border: '1px solid rgba(236,72,153,0.4)', backdropFilter: 'blur(20px)', color: '#fbbf24' }}>
+          <Sparkles size={14} className="text-pink-400" />
+          La Rencontre de vos Rêves commence ici
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 text-center max-w-4xl animate-fade-up">
-          <div className="mb-8 flex justify-center">
-            <span className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-[11px] font-bold tracking-[0.2em] uppercase text-pinterest">
-              <Star size={14} fill="currentColor" /> L'Elite des Rencontres en Côte d'Ivoire
-            </span>
-          </div>
+        {/* Main headline */}
+        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black leading-[1.08] tracking-tight mb-8 animate-[fadeUp_0.9s_ease-out_0.1s_both]"
+          style={{ fontFamily: "'Playfair Display', serif" }}>
+          Trouvez{' '}
+          <span style={{ color: 'transparent', backgroundImage: 'linear-gradient(135deg, #f472b6, #ec4899, #be185d)', backgroundClip: 'text', WebkitBackgroundClip: 'text' }}>
+            l'Amour
+          </span>
+          <br />
+          qui vous{' '}
+          <span style={{ color: 'transparent', backgroundImage: 'linear-gradient(135deg, #fbbf24, #f59e0b, #d97706)', backgroundClip: 'text', WebkitBackgroundClip: 'text', fontStyle: 'italic' }}>
+            ressemble
+          </span>
+          {' '}✨
+        </h1>
 
-          <h1 className="text-5xl md:text-8xl font-bold font-serif mb-8 leading-[1.05] tracking-tight">
-            Rencontrez <br />
-            <span className="bg-gradient-to-r from-pinterest to-rose-400 bg-clip-text text-transparent">l'Exceptionnel</span>
-          </h1>
+        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-12 leading-relaxed animate-[fadeUp_1s_ease-out_0.2s_both]"
+          style={{ color: 'rgba(255,255,255,0.65)', fontWeight: 300 }}>
+          Rejoignez des milliers de célibataires who sont prêts à vivre quelque chose d'unique.
+          Des rencontres authentiques, des connexions profondes — votre histoire commence maintenant.
+        </p>
 
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-            Bienvenue sur <span className="text-white font-semibold">Rencontre De Luxe</span>. 
-            Découvrez une expérience raffinée pour des connexions authentiques et prestigieuses.
-          </p>
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20 animate-[fadeUp_1s_ease-out_0.3s_both]">
+          <Link
+            to="/register"
+            className="group flex items-center gap-3 px-10 py-5 rounded-full font-extrabold text-white text-base uppercase tracking-wider transition-all duration-300 hover:-translate-y-1"
+            style={{
+              background: 'linear-gradient(135deg, #ec4899, #be185d)',
+              boxShadow: '0 12px 40px rgba(236,72,153,0.45)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 16px 50px rgba(236,72,153,0.65)'; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 12px 40px rgba(236,72,153,0.45)'; }}
+          >
+            <Heart size={20} fill="white" />
+            Je me lance !
+            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+          <Link
+            to="/discover"
+            className="flex items-center gap-2 px-10 py-5 rounded-full font-bold text-white text-base tracking-wide transition-all duration-300 hover:-translate-y-1"
+            style={{
+              background: 'rgba(255,255,255,0.08)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(20px)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.14)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; }}
+          >
+            Voir les profils
+          </Link>
+        </div>
 
-          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-            <Link to="/register" className="group relative px-12 py-5 bg-pinterest rounded-2xl font-bold text-white shadow-xl shadow-pinterest/20 hover:scale-105 hover:bg-red-700 transition-all duration-300 overflow-hidden">
-               <span className="relative z-10 flex items-center gap-2">
-                 Commencer l'Expérience <ChevronRight size={20} />
-               </span>
-            </Link>
-            <Link to="/login" className="px-12 py-5 bg-white/5 border border-white/10 backdrop-blur-md rounded-2xl font-bold text-white hover:bg-white/10 transition-all duration-300 shadow-lg">
-               Se Connecter
-            </Link>
-          </div>
-
-          <div className="mt-20 flex items-center justify-center gap-10 opacity-30">
-             <div className="flex items-center gap-2">
-                <Users size={18} /> <span className="text-xs font-bold uppercase tracking-widest">50k+ Membres</span>
-             </div>
-             <div className="flex items-center gap-2">
-                <Shield size={18} /> <span className="text-xs font-bold uppercase tracking-widest">100% Vérifiés</span>
-             </div>
-          </div>
+        {/* Stats row */}
+        <div className="flex flex-wrap gap-4 justify-center animate-[fadeUp_1s_ease-out_0.4s_both]">
+          <Stat icon="💕" label="Membres actifs" val="12 000+" />
+          <Stat icon="💍" label="Rencontres réussies" val="3 400+" />
+          <Stat icon="🌍" label="Villes couvertes" val="25+" />
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-32 px-6 bg-[#0a0a0f]">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {FEATURES.map((f, i) => (
-              <div key={i} className="p-10 rounded-4xl bg-white/[0.02] border border-white/5 hover:border-pinterest/30 hover:bg-white/[0.04] transition-all group shadow-2xl">
-                <div className="w-16 h-16 rounded-2xl bg-pinterest/10 flex items-center justify-center text-pinterest mb-8 group-hover:scale-110 group-hover:bg-pinterest group-hover:text-white transition-all duration-300">
-                  {f.icon}
-                </div>
-                <h3 className="text-2xl font-bold mb-4 tracking-tight">{f.title}</h3>
-                <p className="text-gray-500 text-base leading-relaxed">{f.desc}</p>
-              </div>
+      {/* ══════════════════════════════════════════════════
+          PROFILE PREVIEW GRID
+      ══════════════════════════════════════════════════ */}
+      <section className="relative py-24 px-6" style={{ zIndex: 1 }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Ils ont{' '}
+              <span style={{ color: 'transparent', backgroundImage: 'linear-gradient(135deg, #f472b6, #ec4899)', backgroundClip: 'text', WebkitBackgroundClip: 'text' }}>
+                trouvé l'amour
+              </span>{' '}
+              ici 💞
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.55)' }}>Des milliers de profils vous attendent. Votre match est peut-être là.</p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {PROFILE_PHOTOS.map((src, i) => (
+              <ProfilePreview
+                key={i}
+                src={src}
+                name={['Ines', 'Koffi', 'Aïcha', 'Marc', 'Lola', 'Yvan'][i]}
+                age={[26, 31, 24, 29, 27, 33][i]}
+                city={['Abidjan', 'Bouaké', 'Abidjan', 'Yamoussoukro', 'Abidjan', 'San-Pedro'][i]}
+                delay={0.1 * i}
+              />
             ))}
           </div>
+
+          <div className="text-center mt-12">
+            <Link to="/discover"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-white text-sm uppercase tracking-wider transition-all hover:-translate-y-1 hover:gap-4"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)' }}>
+              Voir tous les profils <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Final Call to Action */}
-      <section className="py-40 px-6 relative overflow-hidden bg-white/5">
-        <div className="absolute inset-0 bg-pinterest/5 blur-[150px] animate-pulse" />
-        <div className="max-w-4xl mx-auto text-center relative z-10 animate-fade-up">
-          <h2 className="text-4xl md:text-6xl font-bold font-serif mb-10 tracking-tight">Votre histoire commence ici.</h2>
-          <p className="text-gray-400 mb-14 text-lg max-w-xl mx-auto leading-relaxed">
-            Rejoignez le cercle privé des rencontres de prestige en Côte d'Ivoire.
+      {/* ══════════════════════════════════════════════════
+          FEATURES
+      ══════════════════════════════════════════════════ */}
+      <section className="relative py-24 px-6" style={{ zIndex: 1 }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16 animate-[fadeUp_0.8s_ease-out_both]">
+            <h2 className="text-4xl md:text-5xl font-black mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Pourquoi{' '}
+              <span style={{ color: 'transparent', backgroundImage: 'linear-gradient(135deg, #fbbf24, #ec4899)', backgroundClip: 'text', WebkitBackgroundClip: 'text' }}>
+                nous choisir
+              </span>
+              {' '}? 🏆
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: '0 auto' }}>
+              Une expérience de rencontre premium, pensée pour des connexions authentiques.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FeatureCard
+              icon="🔒"
+              color="#ec4899"
+              title="100% Sécurisé"
+              desc="Vos données et échanges sont protégés. Profils vérifiés par notre équipe dédiée."
+              delay={0.1}
+            />
+            <FeatureCard
+              icon="⚡"
+              color="#fbbf24"
+              title="Matchs Instantanés"
+              desc="Notre algorithme intelligent vous trouve des correspondances en quelques secondes."
+              delay={0.2}
+            />
+            <FeatureCard
+              icon="💬"
+              color="#a855f7"
+              title="Discussions Illimitées"
+              desc="Échangez librement avec vos matches. Notre messagerie fluide rapproche les cœurs."
+              delay={0.3}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          FINAL CTA
+      ══════════════════════════════════════════════════ */}
+      <section className="relative py-32 px-6 text-center overflow-hidden" style={{ zIndex: 1 }}>
+        <div className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse at center, rgba(236,72,153,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        
+        <div className="max-w-3xl mx-auto relative z-10">
+          <div className="text-6xl mb-8 animate-[floatY_3s_ease-in-out_infinite]">💘</div>
+          <h2 className="text-5xl md:text-6xl font-black mb-6 leading-tight" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Votre histoire{' '}
+            <span style={{ color: 'transparent', backgroundImage: 'linear-gradient(135deg, #f472b6, #fbbf24)', backgroundClip: 'text', WebkitBackgroundClip: 'text', fontStyle: 'italic' }}>
+              d'amour
+            </span>{' '}
+            commence ici
+          </h2>
+          <p className="text-lg mb-12" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            Rejoignez une communauté chaleureuse et trouvez la personne qui fait battre votre cœur.
           </p>
-          <Link to="/register" className="inline-flex items-center gap-2 px-14 py-6 bg-white text-gray-900 font-extrabold rounded-3xl hover:scale-110 transition-all shadow-2xl shadow-white/10 active:scale-95">
-            S'inscrire Gratuitement <ChevronRight size={20} />
-          </Link>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              to="/register"
+              className="group inline-flex items-center justify-center gap-3 px-12 py-5 rounded-full font-extrabold text-white text-base transition-all duration-300 hover:-translate-y-1"
+              style={{
+                background: 'linear-gradient(135deg, #ec4899, #be185d)',
+                boxShadow: '0 16px 48px rgba(236,72,153,0.4)',
+              }}
+            >
+              <Heart size={20} fill="white" />
+              Créer mon profil gratuit
+              <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center gap-2 px-10 py-5 rounded-full font-bold text-white text-sm transition-all hover:-translate-y-1"
+              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)' }}
+            >
+              <MessageCircle size={16} />
+              J'ai déjà un compte
+            </Link>
+          </div>
         </div>
       </section>
     </div>

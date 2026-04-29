@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom'
-// Import pages when they are created
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -8,16 +7,17 @@ import ProfileDetail from './pages/ProfileDetail'
 import Messages from './pages/Messages'
 import Pricing from './pages/Pricing'
 import Admin from './pages/Admin'
-
-// Import components
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import FloatingHearts from './components/FloatingHearts'
 
 function App() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
+      {/* Global floating hearts — visible on every page */}
+      <FloatingHearts />
       <Navbar />
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, position: 'relative', zIndex: 1 }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

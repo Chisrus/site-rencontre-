@@ -1,53 +1,103 @@
 import { Link } from 'react-router-dom';
-import { Mail, Lock, LogIn, Phone, Star } from 'lucide-react';
+import { Lock, LogIn, Phone, Star } from 'lucide-react';
+
+const Input = ({ icon, type, placeholder }) => (
+  <div className="relative group">
+    <div className="absolute left-4 top-0 bottom-0 flex items-center pointer-events-none transition-colors group-focus-within:text-[#eab308] text-white/25">
+      {icon}
+    </div>
+    <input
+      type={type}
+      placeholder={placeholder}
+      className="w-full rounded-2xl text-white text-sm placeholder-white/25 focus:outline-none transition-all pl-12 pr-4"
+      style={{
+        background: 'rgba(255,255,255,0.05)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        height: '54px',
+        fontFamily: 'inherit',
+      }}
+      onFocus={e => { e.target.style.border = '1px solid #eab308'; e.target.style.background = 'rgba(255,255,255,0.07)'; }}
+      onBlur={e => { e.target.style.border = '1px solid rgba(255,255,255,0.1)'; e.target.style.background = 'rgba(255,255,255,0.05)'; }}
+    />
+  </div>
+);
 
 const Login = () => (
-  <div className="bg-[#0f0e1a] min-h-[90vh] flex items-center justify-center py-20 px-6 relative overflow-hidden">
+  <div className="bg-[#06060c] min-h-screen flex items-center justify-center py-20 px-6 relative overflow-hidden font-sans">
     
     {/* Background Orbs */}
-    <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-gold/5 rounded-full blur-[120px]" />
-    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-rose/5 rounded-full blur-[120px]" />
+    <div className="absolute top-0 left-[-10%] w-[500px] h-[500px] bg-[#eab308]/10 rounded-full blur-[150px] pointer-events-none" />
+    <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-rose-600/10 rounded-full blur-[150px] pointer-events-none" />
 
     <div className="w-full max-w-md relative z-10">
-      <div className="bg-white/5 backdrop-blur-3xl border border-white/10 p-10 rounded-[40px] shadow-2xl animate-fade-up">
-        
+      
+      {/* Card */}
+      <div
+        className="rounded-[2.5rem] p-10 md:p-12"
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          backdropFilter: 'blur(40px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+          boxShadow: '0 20px 80px rgba(0,0,0,0.8)',
+        }}
+      >
+        {/* Header */}
         <div className="text-center mb-10">
-          <div className="w-16 h-16 rounded-2xl bg-white/5 mx-auto mb-6 flex items-center justify-center border border-white/10 group-hover:border-gold transition-colors">
-            <LogIn size={28} className="text-gold" />
+          <div
+            className="w-16 h-16 rounded-[1.5rem] mx-auto mb-6 flex items-center justify-center"
+            style={{
+              background: 'linear-gradient(135deg, rgba(252,211,77,0.2), rgba(180,83,9,0.2))',
+              border: '1px solid rgba(234,179,8,0.3)',
+              boxShadow: '0 4px 20px rgba(234,179,8,0.15)',
+            }}
+          >
+            <LogIn size={26} className="text-[#eab308]" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2 font-serif">Bon retour 👋</h1>
-          <p className="text-white/40 text-[11px] font-bold tracking-[0.2em] uppercase">Retrouvez le Cercle de l'Elite</p>
+          <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
+            Espace Privé
+          </h1>
+          <p className="text-[#eab308] text-[10px] font-bold tracking-[0.3em] uppercase opacity-80">Retour au Cercle</p>
         </div>
 
-        <form onSubmit={e => e.preventDefault()} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-[11px] font-bold text-white/40 uppercase tracking-widest pl-2">Email ou Mobile</label>
-            <div className="relative group">
-              <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-gold transition-colors" />
-              <input type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-gold transition-all" placeholder="ton@email.com ou +225..." required />
-            </div>
+        {/* Form */}
+        <form onSubmit={e => e.preventDefault()} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em] pl-1">Identifiant</label>
+            <Input icon={<Phone size={18} />} type="text" placeholder="+225 07..." />
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between items-center px-2">
-              <label className="text-[11px] font-bold text-white/40 uppercase tracking-widest">Mot de passe</label>
-              <button type="button" className="text-[10px] text-gold font-bold hover:underline">Oublié ?</button>
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center px-1">
+              <label className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Mot de passe</label>
+              <button type="button" className="text-[10px] text-[#eab308] font-bold hover:text-white transition-colors tracking-wider">Oublié ?</button>
             </div>
-            <div className="relative group">
-              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-gold transition-colors" />
-              <input type="password" className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-gold transition-all" placeholder="••••••••" required />
-            </div>
+            <Input icon={<Lock size={18} />} type="password" placeholder="••••••••" />
           </div>
 
-          <button type="submit" className="w-full py-5 bg-gradient-gold rounded-2xl font-black text-white uppercase tracking-widest text-xs shadow-xl shadow-gold/20 hover:scale-105 transition-all">
-            Se Connecter
+          <button
+            type="submit"
+            className="w-full font-bold text-black uppercase tracking-[0.15em] text-xs rounded-2xl hover:-translate-y-1 transition-all duration-300 mt-2"
+            style={{
+              height: '54px',
+              background: 'linear-gradient(to right, #d4a574, #b8860b)',
+              boxShadow: '0 8px 24px rgba(212,165,116,0.25)',
+            }}
+            onMouseEnter={e => { e.target.style.boxShadow = '0 12px 32px rgba(212,165,116,0.4)'; }}
+            onMouseLeave={e => { e.target.style.boxShadow = '0 8px 24px rgba(212,165,116,0.25)'; }}
+          >
+            Accéder à mon espace
           </button>
         </form>
 
-        <div className="text-center mt-10 pt-8 border-t border-white/10">
-          <p className="text-white/40 text-[11px] tracking-wide mb-2 uppercase">Pas encore membre ?</p>
-          <Link to="/register" className="text-gold font-bold text-sm hover:underline flex items-center justify-center gap-2">
-            Rejoindre la Communauté <Star size={14} fill="currentColor" />
+        {/* Footer */}
+        <div className="text-center mt-10 pt-8" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+          <p className="text-white/30 text-[10px] tracking-widest mb-3 uppercase font-medium">Pas encore membre ?</p>
+          <Link
+            to="/register"
+            className="inline-flex items-center justify-center gap-2 text-white/70 hover:text-white font-medium text-sm transition-colors group"
+          >
+            Soumettre une candidature
+            <Star size={14} className="text-[#eab308] group-hover:scale-125 transition-transform" fill="currentColor" />
           </Link>
         </div>
       </div>
